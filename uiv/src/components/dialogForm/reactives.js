@@ -15,4 +15,30 @@ export default {
     state: reactive({
         ...initialState,
     }),
+
+    bindProps: {
+        mode: "international",
+        defaultCountry: null,
+        disabledFetchingCountry: false,
+        disabled: false,
+        disabledFormatting: false,
+        placeholder: "Phone number",
+        required: false,
+        enabledCountryCode: false,
+        enabledFlags: true,
+        preferredCountries: [],
+        onlyCountries: [],
+        ignoredCountries: [],
+        autocomplete: "off",
+        name: "telephone",
+        maxLen: 25,
+        wrapperClasses: "",
+        inputClasses: "",
+        dropdownOptions: {
+            disabledDialCode: false
+        },
+        inputOptions: {
+            showDialCode: false
+        }
+    }
 }

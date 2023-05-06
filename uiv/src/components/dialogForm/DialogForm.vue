@@ -82,9 +82,14 @@
               :error-messages="v$.email.$errors.map((e) => e.$message)"
             ></v-text-field>
 
+            <!-- vue3 tel phone input
+              v-bind="bindProps"
+             -->
             <vue-tel-input
               v-model="state.phone_number"
+              :value="state.phone_number"
               @input="onPhoneInput"
+              ref="phone_number"
             ></vue-tel-input>
           </v-container>
         </v-card-text>
@@ -116,7 +121,7 @@ import refs from "./refs";
 import reactives from "./reactives";
 
 const { country, priority, phone_number } = refs;
-const { initialState, state } = reactives;
+const { initialState, state, bindProps } = reactives;
 
 // Props definitions
 const props = defineProps({
@@ -134,15 +139,14 @@ const rules = {
   country: { required },
   priority: { required },
   email: { required, email },
-  phone_number: { required, numeric },
 };
 
 const v$ = useVuelidate(rules, state);
 
-// Emit definitions
+// Emits definitions
 const emits = defineEmits(["close", "reset", "refresh"]);
 
-// watches
+// Watches
 watchEffect(() => {
   const item = props.items.find((x) => x.id == props.selected[0]);
 
@@ -174,13 +178,15 @@ const loadPriority = async () => {
 };
 
 const onSubmit = async () => {
-  // Insert or edit record
+  // Insert or edit records
   let method = "POST";
   let url = "/contractor/";
+  let msg = "Record inserted";
 
   if (props.action === "update") {
     method = "PUT";
     url = `/contractor/${props.selected[0]}/`;
+    msg = "Record updated";
   }
 
   await axios({
@@ -189,7 +195,7 @@ const onSubmit = async () => {
     data: state,
   })
     .then((response) => {
-      emits("refresh");
+      emits("refresh", msg);
       reset();
     })
     .catch((error) => {
@@ -216,8 +222,12 @@ const close = () => {
 };
 
 const onPhoneInput = (phone, phoneObject, input) => {
-  if (phoneObject?.formatted) {
-    state.phone_number = phoneObject.formatted;
+  if (phoneObject?.countryCallingCode && phoneObject.nationalNumber) {
+    const countryCode = phoneObject.countryCallingCode;
+    const nationalNumber = phoneObject.nationalNumber;
+    state.phone_number = `+${countryCode} ${nationalNumber}`;
+  } else if (phoneObject?.formatted) {
+    state.phone_number = phoneObject.number;
   }
 };
 </script>

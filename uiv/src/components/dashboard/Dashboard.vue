@@ -4,6 +4,7 @@
     <tool-buttons
       @loadData="loadData"
       @deleteRecord="deleteRecord"
+      @clearSelected="clearSelected"
       :selected="selected"
       :items="table.items"
       :priority="priority"
@@ -84,4 +85,8 @@ const deleteRecord = () => {
     alert("You have not record selected!");
   }
 };
+
+const clearSelected = () => {
+  selected.value = []
+}
 </script>

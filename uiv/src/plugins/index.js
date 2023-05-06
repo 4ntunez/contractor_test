@@ -13,8 +13,8 @@ import router from '../router'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
-axios.defaults.baseURL = 'http://127.0.0.1:8000/api'
-// axios.defaults.baseURL = 'https://1d33-152-206-208-210.ngrok-free.app/api'
+// axios.defaults.baseURL = 'http://127.0.0.1:8000/api'
+axios.defaults.baseURL = 'https://antunezcantero.pythonanywhere.com/api'
 
 // vue phone input code country
 import VueTelInput from 'vue3-tel-input';

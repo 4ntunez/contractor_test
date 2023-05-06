@@ -26,17 +26,6 @@
           >
         </v-slide-group-item>
 
-        <!-- <v-slide-group-item>
-          <v-select
-            variant="filled"
-            hide-details
-            density="compact"
-            :items="options.items"
-            v-model="options.model"
-            @click="exportTo"
-          ></v-select>
-        </v-slide-group-item> -->
-
         <v-slide-group-item>
           <v-menu open-on-hover>
             <template v-slot:activator="{ props }">
@@ -68,18 +57,18 @@
       :items="props.items"
       @close="closeDialogForm"
       @reset="resetDialogForm"
-      @refresh="refreshDashboard"
+      @refresh="refresh"
     ></dialog-form>
 
     <dialog-form-import
       :dialog="dialogImport"
       :priority="props.priority"
       @close="closeDialogImport"
-      @refresh="refreshDashboard"
+      @refresh="refresh"
     ></dialog-form-import>
 
     <v-snackbar v-model="snackbar">
-      New record added
+      {{ snackMessage }}
       <template v-slot:actions>
         <v-btn color="pink" variant="text" @click="snackbar = false">
           Close
@@ -100,7 +89,7 @@ import reactives from "./reactives";
 import pdfMake from "pdfmake/build/pdfmake.js";
 import pdfFonts from "pdfmake/build/vfs_fonts.js";
 
-const { snackbar, dialogImport, options } = refs;
+const { snackbar, snackMessage, dialogImport, options } = refs;
 const { dialog, initialDialog } = reactives;
 
 const props = defineProps({
@@ -110,16 +99,21 @@ const props = defineProps({
 });
 
 // Emit definitions
-const emits = defineEmits(["loadData", "deleteRecord"]);
+const emits = defineEmits(["loadData", "deleteRecord", "clearSelected"]);
 
 // Methods
-const refresh = () => {
+const refresh = (msg) => {
   // Refresh records
   emits("loadData");
+
+  snackMessage.value = msg ? `${msg}!` : "Updated!";
+  snackbar.value = true;
 };
 
 const addRecord = () => {
   // Add record
+  emits("clearSelected");
+
   dialog.state = true;
   dialog.title = "Add New";
   dialog.action = "add";
@@ -141,6 +135,9 @@ const updateRecord = () => {
 
 const deleteRecord = () => {
   emits("deleteRecord");
+
+  snackMessage.value = "Record deleted!";
+  snackbar.value = true;
 };
 
 const closeDialogForm = () => {
@@ -153,11 +150,6 @@ const closeDialogForm = () => {
 const closeDialogImport = () => {
   // Close dialog form import
   dialogImport.value = false;
-};
-
-const refreshDashboard = () => {
-  // Refresh dashboard data table
-  emits("loadData");
 };
 
 const startPDF = () => {
