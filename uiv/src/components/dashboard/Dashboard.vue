@@ -5,6 +5,7 @@
       @loadData="loadData"
       @deleteRecord="deleteRecord"
       @clearSelected="clearSelected"
+      @showMessage="showMessage"
       :selected="selected"
       :items="table.items"
       :priority="priority"
@@ -27,6 +28,14 @@
       </template>
     </v-data-table>
     <!-- </v-responsive> -->
+
+    <v-snackbar v-model="snackbar" variant="tonal">
+      {{ snackMessage }}
+      <template v-slot:actions>
+        <v-btn variant="icon" @click="snackbar = false" icon="mdi-close">
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -37,7 +46,7 @@ import axios from "axios";
 import { VDataTable } from "vuetify/labs/VDataTable";
 import ToolButtons from "../toolButtons/ToolButtons.vue";
 
-const { drawer, selected, priority, table } = refs;
+const { snackbar, snackMessage, drawer, selected, priority, table } = refs();
 
 onMounted(() => {
   loadData();
@@ -74,7 +83,7 @@ const deleteRecord = () => {
         axios
           .delete(`/contractor/${x}`)
           .then((response) => {
-            loadData();
+            showMessage("Deleted records");
           })
           .catch((error) => {
             console.log(error);
@@ -87,6 +96,13 @@ const deleteRecord = () => {
 };
 
 const clearSelected = () => {
-  selected.value = []
-}
+  selected.value = [];
+};
+
+const showMessage = (msg) => {
+  snackMessage.value = `${msg}!`;
+  snackbar.value = true;
+
+  loadData();
+};
 </script>

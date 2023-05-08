@@ -5,7 +5,7 @@
 
       <v-slide-group show-arrows justify-center align-center>
         <v-slide-group-item>
-          <v-btn variant="underlined" @click.stop="refresh">refresh</v-btn>
+          <v-btn variant="underlined" @click.stop="refresh('Content updated')">refresh</v-btn>
         </v-slide-group-item>
 
         <v-slide-group-item>
@@ -21,7 +21,7 @@
         </v-slide-group-item>
 
         <v-slide-group-item>
-          <v-btn variant="underlined" @click="dialogImport = true"
+          <v-btn variant="underlined" @click="startImport"
             >Import</v-btn
           >
         </v-slide-group-item>
@@ -58,6 +58,7 @@
       @close="closeDialogForm"
       @reset="resetDialogForm"
       @refresh="refresh"
+      @showMessage="showMessage"
     ></dialog-form>
 
     <dialog-form-import
@@ -65,16 +66,8 @@
       :priority="props.priority"
       @close="closeDialogImport"
       @refresh="refresh"
+      @showMessage="showMessage"
     ></dialog-form-import>
-
-    <v-snackbar v-model="snackbar">
-      {{ snackMessage }}
-      <template v-slot:actions>
-        <v-btn color="pink" variant="text" @click="snackbar = false">
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
   </v-card>
 </template>
 
@@ -86,11 +79,11 @@ import DialogFormImport from "../dialogFormImport/DialogFormImport.vue";
 import refs from "./refs";
 import reactives from "./reactives";
 
-import pdfMake from "pdfmake/build/pdfmake.js";
-import pdfFonts from "pdfmake/build/vfs_fonts.js";
+// import pdfMake from "pdfmake/build/pdfmake.js";
+// import pdfFonts from "pdfmake/build/vfs_fonts.js";
 
-const { snackbar, snackMessage, dialogImport, options } = refs;
-const { dialog, initialDialog } = reactives;
+const { dialogImport, options } = refs();
+const { dialog, initialDialog } = reactives();
 
 const props = defineProps({
   selected: Array,
@@ -99,15 +92,12 @@ const props = defineProps({
 });
 
 // Emit definitions
-const emits = defineEmits(["loadData", "deleteRecord", "clearSelected"]);
+const emits = defineEmits(["loadData", "deleteRecord", "clearSelected", "showMessage"]);
 
 // Methods
-const refresh = (msg) => {
+const refresh = () => {
   // Refresh records
   emits("loadData");
-
-  snackMessage.value = msg ? `${msg}!` : "Updated!";
-  snackbar.value = true;
 };
 
 const addRecord = () => {
@@ -135,9 +125,6 @@ const updateRecord = () => {
 
 const deleteRecord = () => {
   emits("deleteRecord");
-
-  snackMessage.value = "Record deleted!";
-  snackbar.value = true;
 };
 
 const closeDialogForm = () => {
@@ -189,7 +176,20 @@ const startPDF = () => {
 const startPrint = () => {};
 
 const exportTo = (v) => {
-  if (v === "Export-PDF") startPDF();
-  if (v === "Print") startPrint();
+  if ( !props.items.length ) {
+    alert("No records to process!")
+    return 
+  }
+
+  // if (v === "Export-PDF") startPDF();
+  // if (v === "Print") startPrint();
 };
+
+const startImport = () => {
+  dialogImport.value = true
+}
+
+const showMessage = (msg) => {
+  emits("showMessage", msg)
+}
 </script>

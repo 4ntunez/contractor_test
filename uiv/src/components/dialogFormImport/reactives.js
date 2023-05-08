@@ -1,7 +1,7 @@
 import { reactive } from "vue"
 
-export default {
-    table: reactive({
+export default () => {
+    const table = reactive({
         headers: [
             { title: "Contact Name", key: "Contact Name" },
             { title: "Company Name", key: "Company Name" },
@@ -12,4 +12,8 @@ export default {
         ],
         items: [],
     })
+
+    return {
+        table
+    }
 }

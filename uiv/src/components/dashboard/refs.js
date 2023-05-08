@@ -1,10 +1,12 @@
 import { ref } from "vue"
 
-export default {
-    drawer: ref(true),
-    selected: ref([]),
-    priority: ref([]),
-    table: ref({
+export default () => {
+    const snackbar = ref(false)
+    const snackMessage = ref("")
+    const drawer = ref(true)
+    const selected = ref([])
+    const priority = ref([])
+    const table = ref({
         headers: [
             { title: "Name", key: "name" },
             { title: "Company Name", key: "company" },
@@ -15,4 +17,13 @@ export default {
         ],
         items: [],
     })
+
+    return {
+        snackbar,
+        snackMessage,
+        drawer,
+        selected,
+        priority,
+        table
+    }
 }

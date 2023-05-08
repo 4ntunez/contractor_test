@@ -29,6 +29,7 @@
               variant="outlined"
               density="compact"
               accept=".xls,.xlsx"
+              @input="clearItems"
             >
               <template v-slot:selection="{ fileNames }">
                 <template
@@ -77,6 +78,9 @@
             <v-btn color="blue-darken-1" variant="outlined" @click="importAll">
               Import all
             </v-btn>
+            <v-btn color="blue-darken-1" variant="outlined" @click="clear">
+              Clear all
+            </v-btn>
           </v-card-actions>
 
           <v-card-text>
@@ -102,40 +106,33 @@
 </template>
 
 <script setup>
-import { defineEmits, defineProps, computed } from "vue";
+import { defineEmits, defineProps } from "vue";
 import { VDataTable } from "vuetify/labs/VDataTable";
 import * as XLSX from "xlsx";
 import axios from "axios";
 import countries from "../countries.json";
 import refs from "./refs";
 import reactives from "./reactives";
+import computes from "./computes";
 
-const { files, selected } = refs;
-const { table } = reactives;
+const { files, selected } = refs();
+const { table } = reactives();
+const { duplicates } = computes(table);
 
+const emits = defineEmits(["close", "refresh", "showMessage"]);
 const props = defineProps({
-    dialog: Boolean,
-    priority: Array
-})
-
-const emits = defineEmits(["close", "refresh"]);
+  dialog: Boolean,
+  priority: Array,
+});
 
 const close = () => {
   emits("close");
 };
 
-const duplicates = computed(() => {
-  const field = "Contact Name"
-  const newArray = table.items.map(m => [m[field], m])
-  const newMap = new Map(newArray)
-  const iterator = newMap.values();
-  const unique = [...iterator]
-  return `${(table.items.length - unique.length)}`
-});
-
 const importFile = () => {
   if (!files.value) {
     alert("No File Chosen");
+    return;
   }
 
   if (files.value) {
@@ -182,6 +179,7 @@ const importRecords = () => {
       axios
         .post("/contractor/", data)
         .then((response) => {
+          emits("showMessage", "Imported records");
           console.log("Inserted");
         })
         .catch((error) => {
@@ -190,7 +188,6 @@ const importRecords = () => {
     }
   });
 
-  emits("refresh");
   emits("close");
 };
 
@@ -210,5 +207,9 @@ const importSelected = () => {
   });
 
   importRecords();
+};
+
+const clear = () => {
+  table.items = [];
 };
 </script>

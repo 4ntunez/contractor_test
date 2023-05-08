@@ -144,7 +144,7 @@ const rules = {
 const v$ = useVuelidate(rules, state);
 
 // Emits definitions
-const emits = defineEmits(["close", "reset", "refresh"]);
+const emits = defineEmits(["close", "reset", "refresh", "showMessage"]);
 
 // Watches
 watchEffect(() => {
@@ -195,7 +195,7 @@ const onSubmit = async () => {
     data: state,
   })
     .then((response) => {
-      emits("refresh", msg);
+      emits("showMessage", msg)
       reset();
     })
     .catch((error) => {

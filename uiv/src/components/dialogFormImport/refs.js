@@ -1,6 +1,11 @@
 import { ref } from "vue"
 
-export default {
-    files: ref(null),
-    selected: ref([])
+export default () => {
+    const files = ref(null)
+    const selected =  ref([])
+
+    return {
+        files,
+        selected
+    }
 }
