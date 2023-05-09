@@ -14,12 +14,12 @@
       <v-divider></v-divider>
 
       <v-card-text>
-        <v-row>
-          <v-col cols="3">
+        <v-row no-gutters>
+          <v-col cols="12" md="3">
             <v-list-subheader>File Location:</v-list-subheader>
           </v-col>
 
-          <v-col cols="9">
+          <v-col cols="12" md="9">
             <v-file-input
               v-model="files"
               color="deep-purple-accent-4"
@@ -29,6 +29,7 @@
               variant="outlined"
               density="compact"
               accept=".xls,.xlsx"
+              messages="Select an excel file to import the data"
               @input="clearItems"
             >
               <template v-slot:selection="{ fileNames }">
